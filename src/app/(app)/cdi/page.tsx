@@ -38,7 +38,7 @@ export default function CdiQueuePage() {
         if (!cancelled) {
           setCases(
             items.map((item: CdiCaseRow) => ({
-              document_id: item.document_id ?? item.id,
+              document_id: item.document_id ,
               title: item.title ?? null,
               document_type: item.document_type ?? "unknown",
               status: item.status ?? "draft",
