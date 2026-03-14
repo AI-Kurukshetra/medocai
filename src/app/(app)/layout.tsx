@@ -42,7 +42,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className={styles.formRow}>
             <form action={handleSignOut}>
-              <button type="submit">Sign out</button>
+              <button type="submit" className={styles.signOut}>
+                Sign out
+              </button>
             </form>
           </div>
         </header>
