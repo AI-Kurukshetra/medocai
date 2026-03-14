@@ -31,6 +31,80 @@ async function getAuthedProfile() {
   return { supabase, profile };
 }
 
+export async function GET(request: NextRequest) {
+  const result = await getAuthedProfile();
+  if ("error" in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
+
+  const { supabase, profile } = result;
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id") ?? searchParams.get("document_id");
+  const limitParam = searchParams.get("limit");
+  const status = searchParams.get("status");
+  const encounterId = searchParams.get("encounter_id");
+
+  if (status && status !== "draft" && status !== "final") {
+    return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+  }
+
+  if (id) {
+    const { data, error } = await supabase
+      .from("clinical_documents")
+      .select("id, encounter_id, title, document_type, status, content, updated_at")
+      .eq("id", id)
+      .eq("organization_id", profile.organization_id)
+      .single();
+
+    if (error || !data) {
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ document: data }, { status: 200 });
+  }
+
+  let limit = 20;
+  if (limitParam) {
+    const parsed = Number.parseInt(limitParam, 10);
+    if (Number.isNaN(parsed) || parsed <= 0 || parsed > 100) {
+      return NextResponse.json(
+        { error: "Invalid limit value" },
+        { status: 400 }
+      );
+    }
+    limit = parsed;
+  }
+
+  let query = supabase
+    .from("clinical_documents")
+    .select("id, encounter_id, title, document_type, status, updated_at")
+    .eq("organization_id", profile.organization_id)
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  if (encounterId) {
+    query = query.eq("encounter_id", encounterId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    return NextResponse.json(
+      { error: error.message ?? "Unable to load documents" },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ documents: data ?? [] }, { status: 200 });
+}
+
 export async function POST(request: NextRequest) {
   const result = await getAuthedProfile();
   if ("error" in result) {

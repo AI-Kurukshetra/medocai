@@ -18,6 +18,13 @@ type GapItem = {
 export default function CdiCaseDetailPage({ params }: CdiCaseProps) {
   const [gaps, setGaps] = useState<GapItem[]>([]);
   const [gapsLoading, setGapsLoading] = useState(false);
+  const [docLoading, setDocLoading] = useState(false);
+  const [docError, setDocError] = useState<string | null>(null);
+  const [documentTitle, setDocumentTitle] = useState<string | null>(null);
+  const [documentType, setDocumentType] = useState<string | null>(null);
+  const [documentStatus, setDocumentStatus] = useState<string | null>(null);
+  const [documentContent, setDocumentContent] = useState<string | null>(null);
+  const [analysisStatus, setAnalysisStatus] = useState<string>("Awaiting run");
 
   const gapSummary = useMemo(() => {
     const total = gaps.length;
@@ -52,8 +59,34 @@ export default function CdiCaseDetailPage({ params }: CdiCaseProps) {
     }
   }
 
+  async function fetchDocument() {
+    setDocLoading(true);
+    setDocError(null);
+    try {
+      const response = await fetch(`/api/documents?id=${params.id}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error("Unable to load document.");
+      }
+      const payload = await response.json();
+      const doc = Array.isArray(payload) ? payload[0] : payload?.document ?? payload;
+      setDocumentTitle(doc?.title ?? "Untitled document");
+      setDocumentType(doc?.document_type ?? "unknown");
+      setDocumentStatus(doc?.status ?? "draft");
+      setDocumentContent(doc?.content ?? "");
+      setAnalysisStatus(doc?.analysis_status ?? "Awaiting run");
+    } catch (error) {
+      setDocError(error instanceof Error ? error.message : "Unable to load document.");
+      setDocumentContent(null);
+    } finally {
+      setDocLoading(false);
+    }
+  }
+
   useEffect(() => {
     void fetchGaps();
+    void fetchDocument();
   }, [params.id]);
 
   return (
@@ -84,9 +117,33 @@ export default function CdiCaseDetailPage({ params }: CdiCaseProps) {
             gap: "12px",
           }}
         >
-          <h2 style={{ fontSize: "18px" }}>Document preview</h2>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <h2 style={{ fontSize: "18px" }}>Document preview</h2>
+              <div style={{ fontSize: "13px", color: "#4a5a5a" }}>
+                ID: <strong>{params.id}</strong>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={fetchDocument}
+              disabled={docLoading}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "8px",
+                border: "1px solid #d9e0df",
+                background: "#f6f7f7",
+                cursor: "pointer",
+                height: "fit-content",
+              }}
+            >
+              {docLoading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
           <div style={{ fontSize: "13px", color: "#4a5a5a" }}>
-            Preview for document ID: <strong>{params.id}</strong>
+            <strong>{documentTitle ?? "Untitled document"}</strong> ·{" "}
+            {documentType ?? "unknown"} ·{" "}
+            {(documentStatus ?? "draft").toUpperCase()}
           </div>
           <div
             style={{
@@ -100,11 +157,16 @@ export default function CdiCaseDetailPage({ params }: CdiCaseProps) {
               color: "#2b3c3b",
             }}
           >
-            Document content preview will appear here after the document API is
-            connected. Use the Document Editor to update the note.
+            {docLoading
+              ? "Loading document..."
+              : docError
+                ? docError
+                : documentContent && documentContent.length > 0
+                  ? documentContent
+                  : "No document content available yet."}
           </div>
           <div style={{ fontSize: "13px", color: "#4a5a5a" }}>
-            Analysis status: <strong>Awaiting run</strong>
+            Analysis status: <strong>{analysisStatus}</strong>
           </div>
         </section>
 

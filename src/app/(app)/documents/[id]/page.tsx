@@ -27,6 +27,9 @@ export default function DocumentEditorPage({ params }: DocumentEditorProps) {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [gaps, setGaps] = useState<GapItem[]>([]);
   const [gapsLoading, setGapsLoading] = useState(false);
+  const [docLoading, setDocLoading] = useState(false);
+  const [docError, setDocError] = useState<string | null>(null);
+  const [loadedOnce, setLoadedOnce] = useState(false);
 
   const gapSummary = useMemo(() => {
     const total = gaps.length;
@@ -61,7 +64,35 @@ export default function DocumentEditorPage({ params }: DocumentEditorProps) {
     }
   }
 
+  async function fetchDocument() {
+    setDocLoading(true);
+    setDocError(null);
+    try {
+      const response = await fetch(`/api/documents?id=${params.id}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error("Unable to load document");
+      }
+      const payload = await response.json();
+      const doc = Array.isArray(payload) ? payload[0] : payload?.document ?? payload;
+      if (!loadedOnce) {
+        setTitle(doc?.title ?? "");
+        setDocumentType(doc?.document_type ?? "progress_note");
+        setStatus(doc?.status ?? "draft");
+        setContent(doc?.content ?? "");
+        setAnalysisStatus(doc?.analysis_status ?? "Not started");
+        setLoadedOnce(true);
+      }
+    } catch (error) {
+      setDocError(error instanceof Error ? error.message : "Unable to load document.");
+    } finally {
+      setDocLoading(false);
+    }
+  }
+
   useEffect(() => {
+    void fetchDocument();
     void fetchGaps();
   }, [params.id]);
 
@@ -122,6 +153,9 @@ export default function DocumentEditorPage({ params }: DocumentEditorProps) {
           background: "#ffffff",
         }}
       >
+        {docError ? (
+          <div style={{ fontSize: "13px", color: "#8a2b2b" }}>{docError}</div>
+        ) : null}
         <div style={{ display: "grid", gap: "8px", gridTemplateColumns: "1fr 1fr" }}>
           <input
             type="text"
@@ -170,7 +204,10 @@ export default function DocumentEditorPage({ params }: DocumentEditorProps) {
               fontSize: "14px",
             }}
           >
-            Analysis status: <strong>{analysisStatus}</strong>
+            Analysis status:{" "}
+            <strong>
+              {docLoading ? "Loading..." : analysisStatus}
+            </strong>
           </div>
         </div>
         <textarea
