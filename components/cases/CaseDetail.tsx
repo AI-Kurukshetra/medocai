@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DocumentViewer } from './DocumentViewer'
 import { CodeSuggestionPanel } from './CodeSuggestionPanel'
+import { NewDocumentDialog } from './NewDocumentDialog'
 import { QueryComposer } from '@/components/queries/QueryComposer'
 import { StatusPill } from '@/components/shared/StatusPill'
 import { ICD10Badge } from '@/components/shared/ICD10Badge'
-import { AlertTriangle, Brain, FileText, MessageSquare, DollarSign, Loader2, XCircle } from 'lucide-react'
+import { AlertTriangle, Brain, FileText, FilePlus, MessageSquare, DollarSign, Loader2, XCircle } from 'lucide-react'
 import { format } from 'date-fns'
 
-export function CaseDetail({ encounter }: { encounter: any }) {
+export function CaseDetail({ encounter, userRole }: { encounter: any; userRole?: string }) {
+  const isPhysician = userRole === 'physician'
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
 
@@ -36,6 +38,7 @@ export function CaseDetail({ encounter }: { encounter: any }) {
   const [analysisResult, setAnalysisResult] = useState<any>(preloadedAnalysis)
   const [showQueryComposer, setShowQueryComposer] = useState(false)
   const [selectedGap, setSelectedGap] = useState<any>(null)
+  const [showNewDocument, setShowNewDocument] = useState(false)
 
   const handleAnalyzeDocument = async (documentId: string, content: string) => {
     setAnalyzing(true)
@@ -76,12 +79,12 @@ export function CaseDetail({ encounter }: { encounter: any }) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-slate-900">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
               {patient.first_name} {patient.last_name}
             </h1>
             <StatusPill status={encounter.cdi_status} />
           </div>
-          <div className="flex items-center gap-4 mt-1 text-sm text-slate-500 flex-wrap">
+          <div className="flex items-center gap-4 mt-1 text-sm text-slate-500 dark:text-slate-400 flex-wrap">
             <span className="font-mono">{patient.mrn}</span>
             <span>•</span>
             <span>Admitted {format(new Date(encounter.admission_date), 'MMMM d, yyyy')}</span>
@@ -101,7 +104,7 @@ export function CaseDetail({ encounter }: { encounter: any }) {
         </div>
 
         {encounter.revenue_impact > 0 && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
             <DollarSign className="w-4 h-4 text-green-600" />
             <span className="text-sm font-semibold text-green-700">
               +${encounter.revenue_impact?.toLocaleString()} captured
@@ -112,7 +115,7 @@ export function CaseDetail({ encounter }: { encounter: any }) {
 
       {/* AI Analysis Error */}
       {analysisError && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+        <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
           <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
           <p className="text-sm text-red-700">{analysisError}</p>
           <button
@@ -126,13 +129,13 @@ export function CaseDetail({ encounter }: { encounter: any }) {
 
       {/* Documentation Gaps Alert */}
       {encounter.documentation_gaps_count > 0 && (
-        <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <div className="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
           <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-amber-800">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
               {encounter.documentation_gaps_count} documentation gap{encounter.documentation_gaps_count > 1 ? 's' : ''} detected
             </p>
-            <p className="text-xs text-amber-600 mt-0.5">
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
               Review AI findings and create queries to improve DRG assignment and revenue capture.
             </p>
           </div>
@@ -157,28 +160,41 @@ export function CaseDetail({ encounter }: { encounter: any }) {
         </TabsList>
 
         <TabsContent value="documents">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-4">
+          <div className={`grid grid-cols-1 gap-6 ${!isPhysician ? 'lg:grid-cols-3' : ''}`}>
+            <div className={`space-y-4 ${!isPhysician ? 'lg:col-span-2' : ''}`}>
+              {isPhysician && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setShowNewDocument(true)}
+                >
+                  <FilePlus className="w-4 h-4 mr-2" />
+                  Add Clinical Document
+                </Button>
+              )}
               {documents.map((doc: any) => (
                 <DocumentViewer
                   key={doc.id}
                   document={doc}
                   onAnalyze={handleAnalyzeDocument}
                   analyzing={analyzing}
+                  readOnly={isPhysician}
                 />
               ))}
               {documents.length === 0 && (
                 <p className="text-sm text-slate-400 text-center py-12">No documents for this encounter.</p>
               )}
             </div>
-            <div>
-              <CodeSuggestionPanel
-                analysisResult={analysisResult}
-                existingDiagnoses={diagnoses}
-                encounterId={encounter.id}
-                onCreateQuery={handleCreateQuery}
-              />
-            </div>
+            {!isPhysician && (
+              <div>
+                <CodeSuggestionPanel
+                  analysisResult={analysisResult}
+                  existingDiagnoses={diagnoses}
+                  encounterId={encounter.id}
+                  onCreateQuery={handleCreateQuery}
+                />
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -190,7 +206,7 @@ export function CaseDetail({ encounter }: { encounter: any }) {
             <CardContent>
               <div className="space-y-3">
                 {diagnoses.map((dx: any) => (
-                  <div key={dx.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div key={dx.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
                     <div className="space-y-1">
                       <ICD10Badge
                         code={dx.icd10_code}
@@ -198,9 +214,9 @@ export function CaseDetail({ encounter }: { encounter: any }) {
                         ccMcc={dx.cc_mcc_status}
                       />
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400 capitalize">{dx.diagnosis_type}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 capitalize">{dx.diagnosis_type}</span>
                         <span className="text-xs text-slate-300">•</span>
-                        <span className="text-xs text-slate-400 capitalize">
+                        <span className="text-xs text-slate-400 dark:text-slate-500 capitalize">
                           Added by {dx.source?.replace('_', ' ')}
                         </span>
                       </div>
@@ -232,17 +248,17 @@ export function CaseDetail({ encounter }: { encounter: any }) {
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <StatusPill status={query.status} />
-                        <span className="text-xs text-slate-400 capitalize">{query.query_type?.replace('_', ' ')}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 capitalize">{query.query_type?.replace('_', ' ')}</span>
                         {query.ai_generated && (
-                          <span className="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-600 rounded font-medium">
+                          <span className="text-xs px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded font-medium">
                             AI Generated
                           </span>
                         )}
                       </div>
-                      <p className="font-medium text-slate-800">{query.subject}</p>
-                      <p className="text-sm text-slate-600">{query.body}</p>
+                      <p className="font-medium text-slate-800 dark:text-slate-200">{query.subject}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">{query.body}</p>
                       {query.physician_response && (
-                        <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                        <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
                           <p className="text-xs font-medium text-green-700 mb-1">Physician Response:</p>
                           <p className="text-sm text-green-800">{query.physician_response}</p>
                         </div>
@@ -252,14 +268,16 @@ export function CaseDetail({ encounter }: { encounter: any }) {
                 </CardContent>
               </Card>
             ))}
-            <Button
-              onClick={() => setShowQueryComposer(true)}
-              variant="outline"
-              className="w-full"
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Create New Query
-            </Button>
+            {!isPhysician && (
+              <Button
+                onClick={() => setShowQueryComposer(true)}
+                variant="outline"
+                className="w-full"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Create New Query
+              </Button>
+            )}
           </div>
         </TabsContent>
       </Tabs>
@@ -271,6 +289,14 @@ export function CaseDetail({ encounter }: { encounter: any }) {
           physicianId={encounter.attending_physician_id}
           physicianName={physician?.full_name}
           onClose={() => { setShowQueryComposer(false); setSelectedGap(null) }}
+        />
+      )}
+
+      {showNewDocument && (
+        <NewDocumentDialog
+          encounterId={encounter.id}
+          authorName={physician?.full_name}
+          onClose={() => setShowNewDocument(false)}
         />
       )}
     </div>

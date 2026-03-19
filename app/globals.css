@@ -23,6 +23,24 @@
   --radius: 0.5rem;
 }
 
+.dark {
+  --background: #0F172A;
+  --foreground: #F1F5F9;
+  --sidebar-bg: #080D18;
+  --sidebar-fg: #64748B;
+  --sidebar-active: #14B8A6;
+  --primary: #0D9488;
+  --primary-foreground: #FFFFFF;
+  --accent: #14B8A6;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --border: #1E293B;
+  --card: #1E293B;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --destructive: #EF4444;
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
   background-color: var(--background);

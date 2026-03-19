@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { createClient } from '@/lib/supabase/client'
@@ -8,6 +9,13 @@ import { format, subDays } from 'date-fns'
 export function RevenueImpactChart({ organizationId }: { organizationId: string }) {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+  const tickColor = isDark ? '#94A3B8' : '#64748B'
+  const gridColor = isDark ? '#1E293B' : '#F1F5F9'
+  const tooltipBg = isDark ? '#1E293B' : '#FFFFFF'
+  const tooltipBorder = isDark ? '#334155' : '#E2E8F0'
+  const tooltipText = isDark ? '#F1F5F9' : '#0F172A'
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,10 +68,14 @@ export function RevenueImpactChart({ organizationId }: { organizationId: string 
         ) : (
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="week" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-              <Tooltip formatter={(v: any) => [`$${Number(v).toLocaleString()}`, 'Revenue Impact']} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="week" tick={{ fontSize: 11, fill: tickColor }} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
+              <YAxis tick={{ fontSize: 11, fill: tickColor }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
+              <Tooltip
+                formatter={(v: any) => [`$${Number(v).toLocaleString()}`, 'Revenue Impact']}
+                contentStyle={{ background: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '8px', color: tooltipText }}
+                labelStyle={{ color: tickColor }}
+              />
               <Bar dataKey="revenue" fill="#0D9488" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

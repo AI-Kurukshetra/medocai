@@ -36,12 +36,12 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-xl mx-auto flex items-center justify-center mb-4" style={{ background: 'var(--primary)' }}>
             <Stethoscope className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">CDI Platform</h1>
+          <h1 className="text-2xl font-bold text-white">medocai</h1>
           <p className="text-slate-400 mt-1 text-sm">Clinical Documentation Intelligence</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6">Sign in to your account</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-2xl">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-6">Sign in to your account</h2>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>

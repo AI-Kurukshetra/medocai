@@ -22,8 +22,8 @@ export function KPICard({ title, value, icon: Icon, trend, trendUp, color = 'tea
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-slate-500">{title}</p>
-            <p className="text-3xl font-bold text-slate-900 mt-1">{value}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+            <p className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">{value}</p>
             {trend && (
               <div className="flex items-center gap-1 mt-2">
                 {trendUp !== undefined && (

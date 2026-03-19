@@ -16,10 +16,11 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   nursing_note: 'Nursing Note',
 }
 
-export function DocumentViewer({ document, onAnalyze, analyzing }: {
+export function DocumentViewer({ document, onAnalyze, analyzing, readOnly = false }: {
   document: any
   onAnalyze: (id: string, content: string) => void
   analyzing: boolean
+  readOnly?: boolean
 }) {
   const [expanded, setExpanded] = useState(true)
 
@@ -32,7 +33,7 @@ export function DocumentViewer({ document, onAnalyze, analyzing }: {
               <FileText className="w-4 h-4 text-teal-600" />
             </div>
             <div>
-              <p className="font-medium text-slate-800 text-sm">{document.title}</p>
+              <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{document.title}</p>
               <p className="text-xs text-slate-400">
                 {DOC_TYPE_LABELS[document.document_type] || document.document_type}
                 {document.author_name && ` • ${document.author_name}`}
@@ -41,7 +42,7 @@ export function DocumentViewer({ document, onAnalyze, analyzing }: {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {!document.ai_processed && (
+            {!document.ai_processed && !readOnly && (
               <Button
                 size="sm"
                 onClick={() => onAnalyze(document.id, document.content)}
@@ -70,9 +71,9 @@ export function DocumentViewer({ document, onAnalyze, analyzing }: {
       {expanded && (
         <CardContent>
           <div
-            className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed p-4 rounded-lg"
+            className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed p-4 rounded-lg"
             style={{
-              background: '#F8FAFC',
+              background: 'var(--background)',
               fontSize: '0.8125rem',
               maxHeight: '400px',
               overflowY: 'auto',

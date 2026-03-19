@@ -62,13 +62,13 @@ export function QueryList({ queries, userRole }: { queries: any[]; userRole?: st
                         {query.query_type?.replace(/_/g, ' ')}
                       </span>
                       {query.ai_generated && (
-                        <span className="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-600 rounded font-medium flex items-center gap-1">
+                        <span className="text-xs px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded font-medium flex items-center gap-1">
                           <Brain className="w-3 h-3" /> AI Generated
                         </span>
                       )}
                       <span className="text-xs text-slate-400 capitalize">{query.priority} priority</span>
                     </div>
-                    <p className="font-medium text-slate-800">{query.subject}</p>
+                    <p className="font-medium text-slate-800 dark:text-slate-100">{query.subject}</p>
                     {patient && (
                       <p className="text-xs text-slate-400">
                         Patient: {patient.first_name} {patient.last_name} •{' '}
@@ -81,7 +81,7 @@ export function QueryList({ queries, userRole }: { queries: any[]; userRole?: st
                   </div>
                 </div>
 
-                <p className="text-sm text-slate-600">{query.body}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{query.body}</p>
 
                 {query.suggested_options?.length > 0 && (
                   <div className="space-y-1.5">
@@ -96,9 +96,9 @@ export function QueryList({ queries, userRole }: { queries: any[]; userRole?: st
                 )}
 
                 {query.physician_response && (
-                  <div className="p-3 bg-green-50 rounded-lg border border-green-100">
-                    <p className="text-xs font-medium text-green-700 mb-1">Physician Response:</p>
-                    <p className="text-sm text-green-800">{query.physician_response}</p>
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
+                    <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-1">Physician Response:</p>
+                    <p className="text-sm text-green-800 dark:text-green-300">{query.physician_response}</p>
                   </div>
                 )}
 
@@ -114,7 +114,7 @@ export function QueryList({ queries, userRole }: { queries: any[]; userRole?: st
                 )}
 
                 {respondingId === query.id && (
-                  <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                     <Textarea
                       placeholder="Your response..."
                       value={responseText}

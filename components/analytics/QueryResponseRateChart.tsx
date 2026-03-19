@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { createClient } from '@/lib/supabase/client'
@@ -9,6 +10,12 @@ const COLORS = ['#0D9488', '#F59E0B', '#EF4444', '#64748B']
 export function QueryResponseRateChart({ organizationId }: { organizationId: string }) {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+  const tooltipBg = isDark ? '#1E293B' : '#FFFFFF'
+  const tooltipBorder = isDark ? '#334155' : '#E2E8F0'
+  const tooltipText = isDark ? '#F1F5F9' : '#0F172A'
+  const legendColor = isDark ? '#94A3B8' : '#64748B'
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,8 +68,8 @@ export function QueryResponseRateChart({ organizationId }: { organizationId: str
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip contentStyle={{ background: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '8px', color: tooltipText }} itemStyle={{ color: tooltipText }} labelStyle={{ color: tooltipText }} />
+              <Legend wrapperStyle={{ color: legendColor }} />
             </PieChart>
           </ResponsiveContainer>
         )}

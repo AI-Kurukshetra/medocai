@@ -6,6 +6,13 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user!.id)
+    .single()
+
   const { data: encounter } = await supabase
     .from('encounters')
     .select(`
@@ -21,5 +28,5 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
 
   if (!encounter) notFound()
 
-  return <CaseDetail encounter={encounter} />
+  return <CaseDetail encounter={encounter} userRole={profile?.role} />
 }

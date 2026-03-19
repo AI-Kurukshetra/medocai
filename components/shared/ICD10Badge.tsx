@@ -18,7 +18,7 @@ export function ICD10Badge({ code, description, ccMcc }: {
       >
         {code}
       </code>
-      {description && <span className="text-sm text-slate-600">{description}</span>}
+      {description && <span className="text-sm text-slate-600 dark:text-slate-300">{description}</span>}
       {badge && (
         <span
           className="px-1.5 py-0.5 rounded text-xs font-bold"

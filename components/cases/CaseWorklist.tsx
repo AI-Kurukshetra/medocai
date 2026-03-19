@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { format } from 'date-fns'
 
-export function CaseWorklist({ encounters }: { encounters: any[] }) {
+export function CaseWorklist({ encounters, userRole }: { encounters: any[]; userRole?: string }) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
@@ -47,32 +47,32 @@ export function CaseWorklist({ encounters }: { encounters: any[] }) {
         </Select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-100">
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">Patient</th>
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">Admitted</th>
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">Principal Dx</th>
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">DRG</th>
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">Gaps</th>
-              <th className="text-left p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">CDI Status</th>
-              <th className="text-right p-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">Revenue Impact</th>
+            <tr className="border-b border-slate-100 dark:border-slate-700">
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Patient</th>
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Admitted</th>
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Principal Dx</th>
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">DRG</th>
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Gaps</th>
+              <th className="text-left p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">CDI Status</th>
+              <th className="text-right p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Revenue Impact</th>
               <th className="p-4"></th>
             </tr>
           </thead>
           <tbody>
             {filtered.map(encounter => (
-              <tr key={encounter.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+              <tr key={encounter.id} className="border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors">
                 <td className="p-4">
                   <div>
-                    <p className="font-medium text-slate-900 text-sm">
+                    <p className="font-medium text-slate-900 dark:text-slate-100 text-sm">
                       {encounter.patients?.first_name} {encounter.patients?.last_name}
                     </p>
                     <p className="text-xs text-slate-400 font-mono">{encounter.patients?.mrn}</p>
                   </div>
                 </td>
-                <td className="p-4 text-sm text-slate-600">
+                <td className="p-4 text-sm text-slate-600 dark:text-slate-300">
                   {format(new Date(encounter.admission_date), 'MMM d, yyyy')}
                 </td>
                 <td className="p-4">
@@ -85,7 +85,7 @@ export function CaseWorklist({ encounters }: { encounters: any[] }) {
                 <td className="p-4">
                   {encounter.assigned_drg ? (
                     <div>
-                      <span className="font-mono text-xs font-medium text-slate-700">DRG {encounter.assigned_drg}</span>
+                      <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">DRG {encounter.assigned_drg}</span>
                       <p className="text-xs text-slate-400 truncate max-w-32">{encounter.drg_description}</p>
                     </div>
                   ) : (

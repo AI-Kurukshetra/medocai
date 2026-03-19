@@ -6,21 +6,22 @@ export default async function QueriesPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('user_profiles').select('*').eq('id', user!.id).single()
 
-  const query = supabase
+  let query = supabase
     .from('queries')
     .select(`
       *,
       encounters (
         id,
         patients (first_name, last_name, mrn)
-      ),
-      user_profiles!created_by (full_name),
-      user_profiles!assigned_to (full_name)
+      )
     `)
     .order('created_at', { ascending: false })
 
   if (profile?.role === 'physician') {
-    query.eq('assigned_to', user!.id)
+    query = query.eq('assigned_to', user!.id)
+  } else {
+    // CDI specialists and others see queries they created
+    query = query.eq('created_by', user!.id)
   }
 
   const { data: queries } = await query.limit(100)
@@ -28,8 +29,8 @@ export default async function QueriesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Queries</h1>
-        <p className="text-slate-500 mt-1">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Queries</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">
           {profile?.role === 'physician' ? 'Queries awaiting your response' : 'All physician queries'}
         </p>
       </div>

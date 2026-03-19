@@ -8,7 +8,7 @@ import {
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: ['cdi_specialist', 'admin', 'physician', 'coder'] },
-  { href: '/cases', label: 'Case Worklist', icon: ClipboardList, roles: ['cdi_specialist', 'admin'] },
+  { href: '/cases', label: 'Cases', icon: ClipboardList, roles: ['cdi_specialist', 'admin', 'physician'] },
   { href: '/queries', label: 'Queries', icon: MessageSquare, roles: ['cdi_specialist', 'physician', 'admin', 'coder'] },
   { href: '/patients', label: 'Patients', icon: Users, roles: ['cdi_specialist', 'admin', 'physician', 'coder'] },
   { href: '/analytics', label: 'Analytics', icon: BarChart3, roles: ['admin', 'cdi_specialist'] },
@@ -28,7 +28,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
             <Stethoscope className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-white font-semibold text-sm">CDI Platform</p>
+            <p className="text-white font-semibold text-sm">medocai</p>
             <p className="text-xs" style={{ color: 'var(--sidebar-fg)' }}>Clinical Intelligence</p>
           </div>
         </div>

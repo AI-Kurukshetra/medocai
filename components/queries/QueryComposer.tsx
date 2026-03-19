@@ -94,12 +94,12 @@ export function QueryComposer({ encounterId, gap, physicianId, physicianName, on
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-            <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-sm font-medium text-teal-700">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+            <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center text-sm font-medium text-teal-700 dark:text-teal-300">
               {physicianName?.charAt(0) || 'P'}
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-800">{physicianName || 'Attending Physician'}</p>
+              <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{physicianName || 'Attending Physician'}</p>
               <p className="text-xs text-slate-400">Query recipient</p>
             </div>
           </div>
@@ -118,9 +118,9 @@ export function QueryComposer({ encounterId, gap, physicianId, physicianName, on
           </Select>
 
           {gap && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-xs font-medium text-amber-700 mb-1">Documentation Gap:</p>
-              <p className="text-sm text-amber-800">{gap.description}</p>
+            <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <p className="text-xs font-medium text-amber-700 dark:text-amber-400 mb-1">Documentation Gap:</p>
+              <p className="text-sm text-amber-800 dark:text-amber-300">{gap.description}</p>
             </div>
           )}
 
@@ -135,21 +135,21 @@ export function QueryComposer({ encounterId, gap, physicianId, physicianName, on
           </Button>
 
           {generateError && (
-            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
               {generateError}
             </p>
           )}
 
           {sendError && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">
               {sendError}
             </p>
           )}
 
           {queryData && (
-            <div className="p-3 bg-teal-50 border border-teal-200 rounded-lg">
-              <p className="text-xs font-medium text-teal-700 mb-1">Subject: {queryData.subject}</p>
-              <p className="text-xs text-teal-600">Options: {queryData.options?.length} presented to physician</p>
+            <div className="p-3 bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 rounded-lg">
+              <p className="text-xs font-medium text-teal-700 dark:text-teal-400 mb-1">Subject: {queryData.subject}</p>
+              <p className="text-xs text-teal-600 dark:text-teal-400">Options: {queryData.options?.length} presented to physician</p>
             </div>
           )}
 
