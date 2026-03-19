@@ -4,7 +4,8 @@ import { QueryList } from '@/components/queries/QueryList'
 export default async function QueriesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('user_profiles').select('*').eq('id', user!.id).single()
+  const { data: profileRaw } = await supabase.from('user_profiles').select('*').eq('id', user!.id).single()
+  const profile = profileRaw as any
 
   let query = supabase
     .from('queries')

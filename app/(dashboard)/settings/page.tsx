@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase
+  const { data: profileRaw } = await supabase
     .from('user_profiles')
     .select('*, organizations(*)')
     .eq('id', user!.id)
     .single()
+  const profile = profileRaw as any
 
   return (
     <div className="space-y-6 max-w-2xl">

@@ -59,7 +59,7 @@ export function QueryComposer({ encounterId, gap, physicianId, physicianName, on
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
 
-      const { error } = await supabase.from('queries').insert({
+      const { error } = await (supabase as any).from('queries').insert({
         encounter_id: encounterId,
         created_by: user!.id,
         assigned_to: physicianId,

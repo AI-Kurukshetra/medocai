@@ -12,7 +12,7 @@ export default async function AnalyticsPage() {
     .select('organization_id')
     .eq('id', user!.id)
     .single()
-  const orgId = profile?.organization_id
+  const orgId = (profile as any)?.organization_id
 
   const [
     { count: totalEncounters },
@@ -26,7 +26,7 @@ export default async function AnalyticsPage() {
     supabase.from('queries').select('*', { count: 'exact', head: true }).eq('status', 'agreed'),
   ])
 
-  const totalRevenue = revenueData?.reduce((sum, e) => sum + (e.revenue_impact || 0), 0) || 0
+  const totalRevenue = (revenueData as any[])?.reduce((sum: number, e: any) => sum + (e.revenue_impact || 0), 0) || 0
   const queryRate = totalQueries ? Math.round(((agreedQueries || 0) / totalQueries) * 100) : 0
 
   return (

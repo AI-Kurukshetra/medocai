@@ -26,7 +26,7 @@ export function CodeSuggestionPanel({ analysisResult, existingDiagnoses, encount
     setAdding(code)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from('encounter_diagnoses').insert({
+      const { error } = await (supabase as any).from('encounter_diagnoses').insert({
         encounter_id: encounterId,
         icd10_code: code,
         icd10_description: dx.description,

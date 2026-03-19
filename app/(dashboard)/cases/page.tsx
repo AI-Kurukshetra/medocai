@@ -20,15 +20,16 @@ export default async function CasesPage() {
     .order('updated_at', { ascending: false })
     .limit(50)
 
-  if (profile?.role === 'physician') {
+  const p = profile as any
+  if (p?.role === 'physician') {
     encountersQuery = encountersQuery.eq('attending_physician_id', user!.id)
   } else {
-    encountersQuery = encountersQuery.eq('organization_id', profile?.organization_id)
+    encountersQuery = encountersQuery.eq('organization_id', p?.organization_id)
   }
 
   const { data: encounters } = await encountersQuery
 
-  const isPhysician = profile?.role === 'physician'
+  const isPhysician = p?.role === 'physician'
 
   return (
     <div className="space-y-6">
@@ -40,7 +41,7 @@ export default async function CasesPage() {
           {isPhysician ? 'Your active patient encounters' : 'Active encounters requiring CDI review'}
         </p>
       </div>
-      <CaseWorklist encounters={encounters || []} userRole={profile?.role} />
+      <CaseWorklist encounters={encounters || []} userRole={p?.role} />
     </div>
   )
 }

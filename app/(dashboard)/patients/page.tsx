@@ -10,12 +10,13 @@ export default async function PatientsPage() {
     .eq('id', user!.id)
     .single()
 
-  const { data: patients } = await supabase
+  const { data: patientsRaw } = await supabase
     .from('patients')
     .select('*, encounters(count)')
-    .eq('organization_id', profile?.organization_id)
+    .eq('organization_id', (profile as any)?.organization_id)
     .order('created_at', { ascending: false })
     .limit(100)
+  const patients = patientsRaw as any[]
 
   return (
     <div className="space-y-6">

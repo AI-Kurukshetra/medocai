@@ -28,7 +28,7 @@ export function QueryResponseRateChart({ organizationId }: { organizationId: str
           .eq('encounters.organization_id', organizationId)
 
         const counts: Record<string, number> = {}
-        queries?.forEach(q => {
+        ;(queries as any[])?.forEach((q: any) => {
           const label = q.status === 'answered' || q.status === 'agreed' ? 'Answered'
             : q.status === 'sent' || q.status === 'viewed' ? 'Pending'
             : q.status === 'disagreed' ? 'Disagreed'

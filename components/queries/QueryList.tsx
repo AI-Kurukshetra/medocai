@@ -20,7 +20,7 @@ export function QueryList({ queries, userRole }: { queries: any[]; userRole?: st
     setSubmittingId(queryId)
     try {
       const supabase = createClient()
-      await supabase.from('queries').update({
+      await (supabase as any).from('queries').update({
         status: agree ? 'agreed' : 'disagreed',
         physician_response: responseText,
         agreed_code: agreedCode || null,

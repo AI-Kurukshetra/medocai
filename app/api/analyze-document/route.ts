@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     const analysis = JSON.parse(responseText)
 
-    await supabase
+    await (supabase as any)
       .from('clinical_documents')
       .update({
         ai_processed: true,
@@ -33,14 +33,14 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', documentId)
 
-    const { data: doc } = await supabase
+    const { data: doc } = await (supabase as any)
       .from('clinical_documents')
       .select('encounter_id')
       .eq('id', documentId)
       .single()
 
     if (doc?.encounter_id) {
-      await supabase
+      await (supabase as any)
         .from('encounters')
         .update({
           documentation_gaps_count: analysis.documentation_gaps?.length || 0,

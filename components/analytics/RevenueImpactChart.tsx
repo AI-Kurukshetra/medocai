@@ -30,7 +30,7 @@ export function RevenueImpactChart({ organizationId }: { organizationId: string 
           .gte('admission_date', subDays(new Date(), 30).toISOString())
 
         const grouped: Record<string, number> = {}
-        encounters?.forEach(e => {
+        ;(encounters as any[])?.forEach((e: any) => {
           const week = format(new Date(e.admission_date), 'MMM d')
           grouped[week] = (grouped[week] || 0) + (e.revenue_impact || 0)
         })

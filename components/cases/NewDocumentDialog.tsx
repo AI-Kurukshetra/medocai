@@ -37,7 +37,7 @@ export function NewDocumentDialog({ encounterId, authorName, onClose }: {
     setError(null)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from('clinical_documents').insert({
+      const { error } = await (supabase as any).from('clinical_documents').insert({
         encounter_id: encounterId,
         document_type: docType,
         title: title.trim(),

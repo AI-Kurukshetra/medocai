@@ -28,5 +28,5 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
 
   if (!encounter) notFound()
 
-  return <CaseDetail encounter={encounter} userRole={profile?.role} />
+  return <CaseDetail encounter={encounter} userRole={(profile as any)?.role} />
 }

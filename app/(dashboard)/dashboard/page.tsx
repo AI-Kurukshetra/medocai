@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     .select('organization_id')
     .eq('id', user!.id)
     .single()
-  const orgId = profile?.organization_id
+  const orgId = (profile as any)?.organization_id
 
   const [
     { count: activeEncounters },
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     supabase.from('encounters').select('*', { count: 'exact', head: true }).eq('organization_id', orgId).eq('cdi_status', 'complete').gte('updated_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
   ])
 
-  const totalRevenue = revenueData?.reduce((sum, e) => sum + (e.revenue_impact || 0), 0) || 0
+  const totalRevenue = (revenueData as any[])?.reduce((sum: number, e: any) => sum + (e.revenue_impact || 0), 0) || 0
 
   return (
     <div className="space-y-6">
