@@ -29,7 +29,23 @@ export default async function CasesPage() {
 
   const { data: encounters } = await encountersQuery
 
+  // Fetch physicians in the same org for the New Case dialog (CDI only)
   const isPhysician = p?.role === 'physician'
+  let physicians: { id: string; full_name: string; specialty: string | null }[] = []
+  if (!isPhysician) {
+    // First try scoped to org; fall back to all physicians if org filter yields nothing
+    const { data: physData } = await (supabase as any)
+      .from('user_profiles')
+      .select('id, full_name, specialty')
+      .eq('role', 'physician')
+      .order('full_name')
+    const all: any[] = physData || []
+    // Prefer physicians in the same org, but show all if none match
+    const scoped = p?.organization_id
+      ? all.filter((ph: any) => !ph.organization_id || ph.organization_id === p.organization_id)
+      : all
+    physicians = scoped.length > 0 ? scoped : all
+  }
 
   return (
     <div className="space-y-6">
@@ -41,7 +57,12 @@ export default async function CasesPage() {
           {isPhysician ? 'Your active patient encounters' : 'Active encounters requiring CDI review'}
         </p>
       </div>
-      <CaseWorklist encounters={encounters || []} userRole={p?.role} />
+      <CaseWorklist
+        encounters={encounters || []}
+        userRole={p?.role}
+        organizationId={p?.organization_id}
+        physicians={physicians}
+      />
     </div>
   )
 }

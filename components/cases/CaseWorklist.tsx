@@ -3,14 +3,28 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { StatusPill } from '@/components/shared/StatusPill'
 import { ICD10Badge } from '@/components/shared/ICD10Badge'
-import { AlertTriangle, ChevronRight, Search } from 'lucide-react'
+import { AlertTriangle, ChevronRight, Search, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { NewCaseDialog } from './NewCaseDialog'
 import { format } from 'date-fns'
 
-export function CaseWorklist({ encounters, userRole }: { encounters: any[]; userRole?: string }) {
+export function CaseWorklist({
+  encounters,
+  userRole,
+  organizationId,
+  physicians,
+}: {
+  encounters: any[]
+  userRole?: string
+  organizationId?: string
+  physicians?: { id: string; full_name: string; specialty: string | null }[]
+}) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [showNewCase, setShowNewCase] = useState(false)
+  const isCDI = userRole !== 'physician'
 
   const filtered = encounters.filter(e => {
     const patient = e.patients
@@ -45,6 +59,16 @@ export function CaseWorklist({ encounters, userRole }: { encounters: any[]; user
             <SelectItem value="complete">Complete</SelectItem>
           </SelectContent>
         </Select>
+        {isCDI && organizationId && (
+          <Button
+            onClick={() => setShowNewCase(true)}
+            style={{ background: 'var(--primary)', color: 'white' }}
+            className="gap-2 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            New Case
+          </Button>
+        )}
       </div>
 
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -126,10 +150,21 @@ export function CaseWorklist({ encounters, userRole }: { encounters: any[]; user
 
         {filtered.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-slate-500">No cases match your filters.</p>
+            <p className="text-slate-500">
+              {encounters.length === 0 && isCDI
+                ? 'No cases yet. Click "New Case" to admit the first patient.'
+                : 'No cases match your filters.'}
+            </p>
           </div>
         )}
       </div>
+
+      {showNewCase && organizationId && (
+        <NewCaseDialog
+          organizationId={organizationId}
+          onClose={() => setShowNewCase(false)}
+        />
+      )}
     </div>
   )
 }
