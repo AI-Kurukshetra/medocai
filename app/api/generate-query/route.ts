@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { anthropic, AI_MODEL } from '@/lib/ai/anthropic'
+import { callAI } from '@/lib/ai/provider'
 import { QUERY_GENERATION_PROMPT } from '@/lib/ai/prompts'
 import { createClient } from '@/lib/supabase/server'
 
@@ -11,17 +11,11 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const message = await anthropic.messages.create({
-      model: AI_MODEL,
-      max_tokens: 1000,
+    const responseText = await callAI({
       system: QUERY_GENERATION_PROMPT,
-      messages: [{
-        role: 'user',
-        content: `Generate a physician query for this gap:\n\nGap: ${gap}\nClinical Evidence: ${clinicalEvidence}`
-      }],
+      user: `Generate a physician query for this gap:\n\nGap: ${gap}\nClinical Evidence: ${clinicalEvidence}`,
+      maxTokens: 1000,
     })
-
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     const query = JSON.parse(responseText)
 
     return NextResponse.json({ success: true, query })

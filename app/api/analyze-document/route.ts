@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { anthropic, AI_MODEL } from '@/lib/ai/anthropic'
+import { callAI } from '@/lib/ai/provider'
 import { DOCUMENT_ANALYSIS_PROMPT } from '@/lib/ai/prompts'
 import { createClient } from '@/lib/supabase/server'
 
@@ -11,14 +11,11 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const message = await anthropic.messages.create({
-      model: AI_MODEL,
-      max_tokens: 2000,
+    const responseText = await callAI({
       system: DOCUMENT_ANALYSIS_PROMPT,
-      messages: [{ role: 'user', content: `Analyze this clinical document:\n\n${content}` }],
+      user: `Analyze this clinical document:\n\n${content}`,
+      maxTokens: 2000,
     })
-
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     const analysis = JSON.parse(responseText)
 
     await (supabase as any)

@@ -25,7 +25,7 @@ const FEATURES = [
     icon: Brain,
     title: 'AI-Powered Document Analysis',
     description:
-      'Claude AI reads clinical documents and instantly surfaces missing diagnoses, undocumented comorbidities, and DRG opportunities your team would otherwise miss.',
+      'Our AI reads clinical documents and instantly surfaces missing diagnoses, undocumented comorbidities, and DRG opportunities your team would otherwise miss.',
     color: 'teal',
   },
   {
@@ -130,7 +130,7 @@ export default function LandingPage() {
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-medium mb-8">
             <Zap className="w-3 h-3" />
-            Powered by Claude AI · Built for CDI teams
+            AI-powered · Built for CDI teams
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight text-white mb-6">

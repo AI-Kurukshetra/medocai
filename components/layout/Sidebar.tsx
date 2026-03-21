@@ -59,7 +59,7 @@ export default function Sidebar({ userRole }: { userRole?: string }) {
       {/* Footer */}
       <div className="p-4 border-t border-slate-800">
         <p className="text-xs text-center" style={{ color: 'var(--sidebar-fg)' }}>
-          Powered by Claude AI
+          Powered by AI
         </p>
       </div>
     </aside>
